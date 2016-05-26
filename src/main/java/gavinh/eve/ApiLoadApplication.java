@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Profile;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootApplication
 @Profile("load")
@@ -29,6 +30,7 @@ public class ApiLoadApplication implements CommandLineRunner {
     private ItemTypeRepository itemTypeRepository;
     
     @Override
+    @Transactional
     public void run(String... strings) throws Exception {
         
         int numRecords = 0;
@@ -42,10 +44,10 @@ public class ApiLoadApplication implements CommandLineRunner {
         while(regions_context != null) {
             List<Map<String,Object>> region_maps = regions_context.read("$.items[*]");
             for(Map<String,Object> region_map : region_maps) {
-                String regionName = (String) region_map.get("name");
+                String regionName = Rest.mapPath(String.class, region_map, "name");
                 if (regionName.charAt(1) != '-') {
                     Region region = new Region();
-                    region.setId((Integer) region_map.get("id"));
+                    region.setId(Rest.mapPath(Integer.class, region_map, "id"));
                     region.setName(regionName);
                     regionRepository.save(region);
                     log.info(String.format("%04d Region [%s]", ++numRecords, region.getName()));
@@ -65,8 +67,8 @@ public class ApiLoadApplication implements CommandLineRunner {
                     List<Map<String,Object>> type_maps = type_context.read("$.items[*].type");
                     for(Map<String,Object> type_map : type_maps) {
                         ItemType itemType = new ItemType();
-                        itemType.setId((Integer) type_map.get("id"));
-                        itemType.setName((String) type_map.get("name"));
+                        itemType.setId(Rest.mapPath(Integer.class, type_map, "id"));
+                        itemType.setName(Rest.mapPath(String.class, type_map, "name"));
                         itemTypeRepository.save(itemType);
                         log.info(String.format("%04d ItemType [%s]", ++numRecords, itemType.getName()));
                     }
