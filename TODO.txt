@@ -1,0 +1,7 @@
+0. Test JamlBeans and see if it will process the blueprints yaml file
+1. Processes the blueprints YAML file recursively to get a shopping list for a composite object.
+2. Compute amounts for the shoppinglist taking into account ME and POS bonus.
+3. Work out accurate costs taking into account volumes available at each price point.
+    3.1 Limit to market orders in selected stations (trade hubs)
+    3.2 LImit to market orders in HS
+
