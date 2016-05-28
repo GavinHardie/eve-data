@@ -27,10 +27,13 @@ public class StockBreakdown {
         }
     }
     
+    public ItemType itemType;
     public List<StockBand> stockBands = new ArrayList<>();
     public Map<StockZone,Integer> totals = new HashMap<>();
     
     public StockBreakdown(ItemType itemType, float minPrice, float bandWidth, int numBands) {
+        
+        this.itemType = itemType;
         
         stockBands.add(new StockBand(0.0f, minPrice));
         float floor = minPrice;
@@ -75,6 +78,30 @@ public class StockBreakdown {
         Integer currentQuantity = map.get(zone);
         if (currentQuantity == null) currentQuantity = 0;
         map.put(zone, currentQuantity + quantity);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for(StockBreakdown.StockBand stockBand : stockBands) {
+            result.append(stockBand.getDesc());
+            for(StockBreakdown.StockZone zone : StockBreakdown.StockZone.values()) {
+                Integer quantity = stockBand.quantity.get(zone);
+                if (quantity != null) {
+                    result.append(String.format("   %d in %s", quantity, zone.toString()));
+                }
+            }
+            result.append("\n");
+        }
+
+        result.append("TOTAL");
+        for(StockBreakdown.StockZone zone : StockBreakdown.StockZone.values()) {
+            Integer quantity = totals.get(zone);
+            if (quantity != null) {
+                result.append(String.format("   %d in %s", quantity, zone.toString()));
+            }
+        }
+        return result.toString();
     }
     
     public static enum StockZone { Jita, Hubs, Highsec, Lowsec, Nullsec };

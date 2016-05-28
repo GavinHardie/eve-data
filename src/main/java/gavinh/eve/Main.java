@@ -19,11 +19,11 @@ public class Main {
         load                        populate an empty DB
         market-orders               update todays market orders in the DB
         run-shoppinglist-report     produce shopping list report
-        run-stocklevel-report       breakdown universe supply into price bands
+        run-stockbreakdown-report   breakdown universe supply into price bands
         */
         
-//        application.setAdditionalProfiles("market-orders");
-        application.setAdditionalProfiles("run-stocklevel-report");
+        application.setAdditionalProfiles("market-orders");
+//        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);
     }
 

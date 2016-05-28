@@ -6,10 +6,9 @@
 package gavinh.eve;
 
 import gavinh.eve.manufacturing.MarketHub;
-import gavinh.eve.manufacturing.Purchase;
 import gavinh.eve.manufacturing.ShoppingList;
 import gavinh.eve.manufacturing.ShoppingListFactory;
-import gavinh.eve.service.PurchasesService;
+import gavinh.eve.service.ShoppingListService;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class RunShoppingListReport implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(RunShoppingListReport.class);
     
     @Autowired
-    PurchasesService purchasesService;
+    ShoppingListService shoppingListService;
     
     @Override
     public void run(String... strings) throws Exception {
@@ -41,25 +40,9 @@ public class RunShoppingListReport implements CommandLineRunner {
         ShoppingList shoppingList = ShoppingListFactory.getShoppingList();
         
         // Generate purchases
-        purchasesService.makePurchases(stationIds, shoppingList);
+        shoppingListService.makePurchases(shoppingList, stationIds);
 
-        float totalCost = 0.0f;
-        for(ShoppingList.Item item : shoppingList.items) {
-            boolean first = true;
-            for(Purchase purchase : item.purchases) {
-                if (first) {
-                    log.info(String.format("%,d %s [%d]", item.quantity, purchase.itemType.getName(), purchase.itemType.getId()));
-                    first = false;
-                }
-                totalCost += purchase.totalCost;
-                log.info(String.format("\t%,d at %s costing %,.2f (from %,.2f to %,.2f)", 
-                        purchase.totalQuantity, purchase.station.getSolarSystem().getName(), purchase.totalCost, purchase.minPrice, purchase.maxPrice));
-            }
-        }
-        log.info("---");
-        log.info(String.format("Total cost %,.2f", totalCost));
-        
+        // Print the results
+        log.info("ShoppingListReport\n" + shoppingList.toString());
     }
-    
-    
 }

@@ -5,6 +5,8 @@
  */
 package gavinh.eve.manufacturing;
 
+import gavinh.eve.data.ItemType;
+import gavinh.eve.data.Station;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,5 +29,35 @@ public class ShoppingList {
             this.itemTypeId = itemTypeId;
             this.quantity = quantity;
         }
+    }
+    
+    public static class Purchase {
+        public Station station;
+        public ItemType itemType;
+        public float minPrice;
+        public float maxPrice;
+        public float totalCost;
+        public int totalQuantity;
+        public boolean outOfStock;
+    }
+ 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        float totalCost = 0.0f;
+        for(ShoppingList.Item item : items) {
+            boolean first = true;
+            for(ShoppingList.Purchase purchase : item.purchases) {
+                if (first) {
+                    result.append(String.format("%,d %s [%d]\n", item.quantity, purchase.itemType.getName(), purchase.itemType.getId()));
+                    first = false;
+                }
+                totalCost += purchase.totalCost;
+                result.append(String.format("\t%,d at %s costing %,.2f (from %,.2f to %,.2f)\n", 
+                        purchase.totalQuantity, purchase.station.getSolarSystem().getName(), purchase.totalCost, purchase.minPrice, purchase.maxPrice));
+            }
+        }
+        result.append(String.format("Total cost %,.2f", totalCost));
+        return result.toString();
     }
 }

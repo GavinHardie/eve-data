@@ -6,7 +6,6 @@ import gavinh.eve.data.MarketOrder;
 import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.data.Station;
 import gavinh.eve.data.StationRepository;
-import gavinh.eve.manufacturing.Purchase;
 import gavinh.eve.manufacturing.ShoppingList;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 
  * @author Gavin
  */
 @Service
-public class PurchasesService {
+public class ShoppingListService {
     
-    private static final Logger log = LoggerFactory.getLogger(PurchasesService.class);
+    private static final Logger log = LoggerFactory.getLogger(ShoppingListService.class);
     
     @Autowired
     private MarketOrderRepository marketOrderRepository;
@@ -41,22 +40,22 @@ public class PurchasesService {
 
     private final String TODAY;
     
-    public PurchasesService() {
+    public ShoppingListService() {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         TODAY = sdf.format(new Date());
         
     }
     
-    public void makePurchases(List<Integer> stationIds, ShoppingList shoppingList) {
+    public void makePurchases(ShoppingList shoppingList, List<Integer> stationIds) {
         for(ShoppingList.Item item : shoppingList.items) {
-            Map<Integer,Purchase> purchases = makePurchases(item.itemTypeId, stationIds, item.quantity);
+            Map<Integer,ShoppingList.Purchase> purchases = makePurchases(item.itemTypeId, stationIds, item.quantity);
             item.purchases = new ArrayList<>();
             item.purchases.addAll(purchases.values());
         }            
     }
         
-    private Map<Integer,Purchase> makePurchases(Long itemTypeId, List<Integer> stationIds, Integer quantity) {
+    private Map<Integer,ShoppingList.Purchase> makePurchases(Long itemTypeId, List<Integer> stationIds, Integer quantity) {
 
         ItemType itemType = itemTypeRepository.findOne(itemTypeId);
         List<Station> stations = new ArrayList<>();
@@ -71,15 +70,15 @@ public class PurchasesService {
         
         Collections.sort(marketOrders, new MarketOrderComparator("sell"));
 
-        Map<Integer,Purchase> result = new HashMap<>();
+        Map<Integer,ShoppingList.Purchase> result = new HashMap<>();
         
         int outstanding = quantity;
         for(MarketOrder marketOrder : marketOrders) {
             int q = Math.min(marketOrder.getQuantity(), outstanding);
             if (q > 0) {
-                Purchase purchase = result.get(marketOrder.getStation().getId());
+                ShoppingList.Purchase purchase = result.get(marketOrder.getStation().getId());
                 if (purchase == null) {
-                    purchase = new Purchase();
+                    purchase = new ShoppingList.Purchase();
                     purchase.station = marketOrder.getStation();
                     purchase.itemType = itemType;
                     purchase.minPrice = marketOrder.getPrice();
@@ -91,7 +90,7 @@ public class PurchasesService {
                 outstanding -= q;
             }
         }
-        for(Purchase purchase : result.values()) {
+        for(ShoppingList.Purchase purchase : result.values()) {
             purchase.outOfStock = outstanding > 0;
         }
         return result;

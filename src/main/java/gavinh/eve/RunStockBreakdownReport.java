@@ -5,6 +5,7 @@ import gavinh.eve.data.ItemTypeRepository;
 import gavinh.eve.data.MarketOrder;
 import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.manufacturing.StockBreakdown;
+import gavinh.eve.service.StockBreakdownService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,16 +17,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication
-@Profile("run-stocklevel-report")
-public class RunStockLevelReport implements CommandLineRunner {
+@Profile("run-stockbreakdown-report")
+public class RunStockBreakdownReport implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(RunStockLevelReport.class);
+    private static final Logger log = LoggerFactory.getLogger(RunStockBreakdownReport.class);
 
     @Autowired
     private ItemTypeRepository itemTypeRepository;
 
     @Autowired
-    private MarketOrderRepository marketOrderRepository;
+    private StockBreakdownService stockBreakdownService;
 
     @Override
     public void run(String... strings) throws Exception {
@@ -35,32 +36,12 @@ public class RunStockLevelReport implements CommandLineRunner {
 
         ItemType itemType = itemTypeRepository.findOne(11578L);     // Covops Cloaks
 
-        // Get the data
         StockBreakdown stockBreakdown = new StockBreakdown(itemType, 4000000, 100000, 30);
-        List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemType(TODAY, "sell", itemType);
-        for(MarketOrder marketOrder : marketOrders) {
-            stockBreakdown.addStock(marketOrder.getStation(), marketOrder.getPrice(), marketOrder.getQuantity());
-        }
+
+        // Get the data
+        stockBreakdownService.makeBands(stockBreakdown, TODAY);
 
         // Print the report
-        for(StockBreakdown.StockBand stockBand : stockBreakdown.stockBands) {
-            StringBuilder summary = new StringBuilder();
-            for(StockBreakdown.StockZone zone : StockBreakdown.StockZone.values()) {
-                Integer quantity = stockBand.quantity.get(zone);
-                if (quantity != null) {
-                    summary.append(String.format("   %d in %s", quantity, zone.toString()));
-                }
-            }
-            log.info(String.format("[%s]%s", stockBand.getDesc(), summary.toString()));
-        }
-
-        StringBuilder summary = new StringBuilder();
-        for(StockBreakdown.StockZone zone : StockBreakdown.StockZone.values()) {
-            Integer quantity = stockBreakdown.totals.get(zone);
-            if (quantity != null) {
-                summary.append(String.format("   %d in %s", quantity, zone.toString()));
-            }
-        }
-        log.info(String.format("TOTALS%s", summary.toString()));
+        log.info("StockBreakdown\n" + stockBreakdown.toString());
     }
 }
