@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class Main {
 
-    private static final Logger log = LoggerFactory.getLogger(JpaTestApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String args[]) {
         SpringApplication application = new SpringApplication(Main.class);
-        application.setAdditionalProfiles("market-orders");  // load market-orders jpa-test rest-test
+        application.setAdditionalProfiles("market-orders");  // load market-orders 
         application.run(args);
     }
 

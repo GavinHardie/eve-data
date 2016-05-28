@@ -6,7 +6,7 @@
 package gavinh.eve.service;
 
 import com.jayway.jsonpath.DocumentContext;
-import gavinh.eve.Rest;
+import gavinh.eve.Utils;
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
 import gavinh.eve.data.MarketApiCall;
@@ -69,23 +69,24 @@ public class MarketOrderService {
             return;
         }
 
+        // Delete any records in the DB from requests made earlier today
         marketOrderRepository.deleteByFetchedAndBuysellAndItemTypeAndRegion(TODAY, orderType, itemType, region);
 
         String marketorders_url = String.format("https://crest-tq.eveonline.com/market/%d/orders/%s/?type=http://crest-tq.eveonline.com/types/%d/", region.getId(), orderType, itemType.getId());
-        DocumentContext marketorders_context = Rest.get(marketorders_url);
+        DocumentContext marketorders_context = Utils.get(marketorders_url);
         while (marketorders_context != null) {
 
-            // Process the locations
+            // Process the locations.  Fetch station & solarsystem information if not in DB
             List<Map<String, Object>> location_maps = marketorders_context.read("$.items[*].location");
             Set<Integer> validStationIds = new HashSet<>();
             for (Map<String, Object> location_map : location_maps) {
-                Integer stationId = Rest.mapPath(Integer.class, location_map, "id");
+                Integer stationId = Utils.mapPath(Integer.class, location_map, "id");
                 if (validStationIds.contains(stationId)) {
                     continue;
                 }
                 Station station = stationRepository.findOne(stationId);
                 if (station == null) {
-                    DocumentContext location_context = Rest.decodeAndGet(Rest.mapPath(String.class, location_map, "href"));
+                    DocumentContext location_context = Utils.decodeAndGet(Utils.mapPath(String.class, location_map, "href"));
                     Integer solarSystemId = location_context.read("$.solarSystem.id", Integer.class);
                     SolarSystem solarSystem = solarSystemRepository.findOne(solarSystemId);
                     if (solarSystem == null) {
@@ -106,14 +107,15 @@ public class MarketOrderService {
                 validStationIds.add(stationId);
             }
 
+            // Process the marketorders
             List<Map<String, Object>> marketorder_maps = marketorders_context.read("$.items[*]");
             for (Map<String, Object> marketorder_map : marketorder_maps) {
-                Station station = stationRepository.findOne(Rest.mapPath(Integer.class, marketorder_map, "location", "id"));
+                Station station = stationRepository.findOne(Utils.mapPath(Integer.class, marketorder_map, "location", "id"));
 
                 MarketOrder marketOrder = new MarketOrder();
-                marketOrder.setId((Long) marketorder_map.get("id"));
-                marketOrder.setQuantity((Integer) marketorder_map.get("volume"));
-                marketOrder.setPrice(Rest.mapPath(Float.class, marketorder_map, "price"));
+                marketOrder.setId(Utils.mapPath(Long.class, marketorder_map, "id"));
+                marketOrder.setQuantity(Utils.mapPath(Integer.class, marketorder_map, "volume"));
+                marketOrder.setPrice(Utils.mapPath(Float.class, marketorder_map, "price"));
                 marketOrder.setBuysell(orderType);
                 marketOrder.setFetched(TODAY);
                 marketOrder.setItemType(itemType);
@@ -126,7 +128,7 @@ public class MarketOrderService {
             if (numMarketOrders > 0) {
                 log.info(String.format("Added [%d] market orders", numMarketOrders));
             }
-            marketorders_context = Rest.decodeAndGet(marketorders_context.read("$.next.href", String.class));
+            marketorders_context = Utils.decodeAndGet(marketorders_context.read("$.next.href", String.class));
         }
 
         // Update marketApiCall

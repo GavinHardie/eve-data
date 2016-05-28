@@ -10,9 +10,13 @@ import java.util.Map;
 import org.jboss.logging.Logger;
 import org.springframework.web.client.RestTemplate;
 
-public class Rest {
+/**
+ * 
+ * @author Gavin
+ */
+public class Utils {
     
-    private static Logger log = Logger.getLogger(Rest.class);
+    private static Logger log = Logger.getLogger(Utils.class);
     
     private static RestTemplate REST_TEMPLATE = new RestTemplate();
     private static Configuration CONF = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
@@ -31,8 +35,8 @@ public class Rest {
         if (url == null)
             return null;
         try {
-            String root = REST_TEMPLATE.getForObject(url, String.class);
-            DocumentContext context = JsonPath.using(CONF).parse(root);
+            String json = REST_TEMPLATE.getForObject(url, String.class);
+            DocumentContext context = JsonPath.using(CONF).parse(json);
             return context;
         } catch (Throwable e) {
             log.error(String.format("[%s] while getting [%s]", e.getMessage(), url));
