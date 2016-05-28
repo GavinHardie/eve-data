@@ -18,8 +18,10 @@ public class ShoppingList {
     public List<Item> items = new ArrayList<>();
     
     static public class Item {
+        
         public final long itemTypeId;
         public final int quantity;
+        public List<Purchase> purchases;
         
         Item(int itemTypeId, int quantity) {
             this.itemTypeId = itemTypeId;

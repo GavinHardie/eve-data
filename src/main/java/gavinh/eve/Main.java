@@ -16,12 +16,14 @@ public class Main {
         SpringApplication application = new SpringApplication(Main.class);
         
         /*
-        load            populate an empty DB.  Specifically regions and itemTypes
-        market-orders   update todays market orders in the DB
-        run-report      produce sample report
+        load                        populate an empty DB
+        market-orders               update todays market orders in the DB
+        run-shoppinglist-report     produce shopping list report
+        run-stocklevel-report       breakdown universe supply into price bands
         */
         
-        application.setAdditionalProfiles("run-report");
+//        application.setAdditionalProfiles("market-orders");
+        application.setAdditionalProfiles("run-stocklevel-report");
         application.run(args);
     }
 

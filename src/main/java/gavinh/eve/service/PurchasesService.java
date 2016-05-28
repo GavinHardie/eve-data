@@ -26,9 +26,9 @@ import org.springframework.stereotype.Service;
  * @author Gavin
  */
 @Service
-public class SpreadsheetReport {
+public class PurchasesService {
     
-    private static final Logger log = LoggerFactory.getLogger(SpreadsheetReport.class);
+    private static final Logger log = LoggerFactory.getLogger(PurchasesService.class);
     
     @Autowired
     private MarketOrderRepository marketOrderRepository;
@@ -41,31 +41,19 @@ public class SpreadsheetReport {
 
     private final String TODAY;
     
-    public SpreadsheetReport() {
+    public PurchasesService() {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         TODAY = sdf.format(new Date());
         
     }
     
-    public void runReport(List<Integer> stationIds, ShoppingList shoppingList) {
-        float totalCost = 0.0f;
+    public void makePurchases(List<Integer> stationIds, ShoppingList shoppingList) {
         for(ShoppingList.Item item : shoppingList.items) {
             Map<Integer,Purchase> purchases = makePurchases(item.itemTypeId, stationIds, item.quantity);
-            boolean first = true;
-
-            for(Purchase purchase : purchases.values()) {
-                if (first) {
-                    log.info(String.format("%,d %s [%d]", item.quantity, purchase.itemType.getName(), purchase.itemType.getId()));
-                    first = false;
-                }
-                totalCost += purchase.totalCost;
-                log.info(String.format("\t%,d at %s costing %,.2f (from %,.2f to %,.2f)", 
-                        purchase.totalQuantity, purchase.station.getSolarSystem().getName(), purchase.totalCost, purchase.minPrice, purchase.maxPrice));
-            }
-        }
-        log.info("---");
-        log.info(String.format("Total cost %,.2f", totalCost));
+            item.purchases = new ArrayList<>();
+            item.purchases.addAll(purchases.values());
+        }            
     }
         
     private Map<Integer,Purchase> makePurchases(Long itemTypeId, List<Integer> stationIds, Integer quantity) {
