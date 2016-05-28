@@ -95,4 +95,8 @@ public class MarketOrder implements Serializable {
         this.station = station;
     }
     
+    @Override
+    public String toString() {
+        return String.format("%d %s %s %s %d %f", id, fetched, buysell, itemType.getName(), quantity, price);
+    }
 }

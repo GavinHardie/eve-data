@@ -24,7 +24,7 @@ public class Main {
      */
     public static void main(String args[]) {
         SpringApplication application = new SpringApplication(Main.class);
-        application.setAdditionalProfiles("market-orders");  // load market-orders 
+        application.setAdditionalProfiles("blueprint-test");  // load market-orders blueprint-test
         application.run(args);
     }
 
