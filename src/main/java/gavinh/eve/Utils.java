@@ -20,10 +20,10 @@ import org.springframework.web.client.RestTemplate;
  */
 public class Utils {
     
-    private static Logger log = Logger.getLogger(Utils.class);
+    private static final Logger log = Logger.getLogger(Utils.class);
     
-    private static RestTemplate REST_TEMPLATE = new RestTemplate();
-    private static Configuration CONF = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
+    private static final RestTemplate REST_TEMPLATE = new RestTemplate();
+    private static final Configuration CONF = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
     
     public static DocumentContext decodeAndGet(String url) {
         if (url == null)

@@ -12,19 +12,16 @@ public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-    /**
-     * Setup.
-     * 
-     * 1. Put the DB credentials in resources\application.properties
-     * 2. Run the "load" profile to load regions and itemTypes
-     * 3. Run the "market-orders" profile to load market orders.  Currently hard
-     *      coded to run for about 20 itemTypes.
-     * 
-     * @param args 
-     */
     public static void main(String args[]) {
         SpringApplication application = new SpringApplication(Main.class);
-        application.setAdditionalProfiles("blueprint-test");  // load market-orders blueprint-test
+        
+        /*
+        load            populate an empty DB.  Specifically regions and itemTypes
+        market-orders   update todays market orders in the DB
+        run-report      produce sample report
+        */
+        
+        application.setAdditionalProfiles("run-report");
         application.run(args);
     }
 

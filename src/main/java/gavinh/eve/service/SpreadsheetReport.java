@@ -1,4 +1,4 @@
-package gavinh.eve.report;
+package gavinh.eve.service;
 
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
@@ -48,7 +48,7 @@ public class SpreadsheetReport {
         
     }
     
-    public void printPurchases(List<Integer> stationIds, ShoppingList shoppingList) {
+    public void runReport(List<Integer> stationIds, ShoppingList shoppingList) {
         float totalCost = 0.0f;
         for(ShoppingList.Item item : shoppingList.items) {
             Map<Integer,Purchase> purchases = makePurchases(item.itemTypeId, stationIds, item.quantity);
@@ -84,9 +84,6 @@ public class SpreadsheetReport {
         Collections.sort(marketOrders, new MarketOrderComparator("sell"));
 
         Map<Integer,Purchase> result = new HashMap<>();
-//        Purchase result = new Purchase();
-//        result.itemType = itemType;
-//        result.totalQuantity = quantity;
         
         int outstanding = quantity;
         for(MarketOrder marketOrder : marketOrders) {

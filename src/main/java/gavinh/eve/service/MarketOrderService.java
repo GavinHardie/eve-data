@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gavinh.eve.service;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -15,7 +10,6 @@ import gavinh.eve.data.MarketApiCallRepository;
 import gavinh.eve.data.MarketOrder;
 import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.data.Region;
-import gavinh.eve.data.RegionRepository;
 import gavinh.eve.data.SolarSystem;
 import gavinh.eve.data.SolarSystemRepository;
 import gavinh.eve.data.Station;
