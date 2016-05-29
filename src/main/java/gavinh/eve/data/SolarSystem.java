@@ -15,6 +15,12 @@ public class SolarSystem implements Serializable {
     @Column(length=255, nullable=false)
     private String name;
     
+    @Column(length=255, nullable=false)
+    private String href;
+    
+    @Column(nullable=false)
+    private char zone;      // H(igh), L(ow), N(ull), I(sland)
+    
     private float security;
 
     @ManyToOne(optional=false)
@@ -51,6 +57,21 @@ public class SolarSystem implements Serializable {
     public void setRegion(Region region) {
         this.region = region;
     }
-    
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public char getZone() {
+        return zone;
+    }
+
+    public void setZone(char zone) {
+        this.zone = zone;
+    }
     
 }

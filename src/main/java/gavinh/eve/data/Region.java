@@ -19,6 +19,9 @@ public class Region implements Serializable {
     @Column(length=255, nullable=false)
     private String name;
 
+    @Column(length=255, nullable=false)
+    private String href;
+    
     public long getId() {
         return id;
     }
@@ -34,6 +37,13 @@ public class Region implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
     
 }

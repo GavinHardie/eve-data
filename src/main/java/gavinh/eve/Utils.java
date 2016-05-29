@@ -7,10 +7,10 @@ import com.jayway.jsonpath.Option;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jboss.logging.Logger;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class Utils {
     
+    private static Pattern ID_FROM_HREF = Pattern.compile(".*/(\\d+)/?");
     private static final Logger log = Logger.getLogger(Utils.class);
     
     private static final RestTemplate REST_TEMPLATE = new RestTemplate();
@@ -38,13 +39,25 @@ public class Utils {
     public static DocumentContext get(String url) {
         if (url == null)
             return null;
-        try {
-            String json = REST_TEMPLATE.getForObject(url, String.class);
-            DocumentContext context = JsonPath.using(CONF).parse(json);
-            return context;
-        } catch (Throwable e) {
-            log.error(String.format("[%s] while getting [%s]", e.getMessage(), url));
-            throw e;
+        int retry = 10;
+        while(true) {
+            try {
+                String json = REST_TEMPLATE.getForObject(url, String.class);
+                DocumentContext context = JsonPath.using(CONF).parse(json);
+                return context;     // Normal exit
+            } catch (Throwable e) {
+                if (retry < 0) {
+                    throw e;        // Retry failed... exit
+                } else {
+                    log.info(String.format("[%s] while getting [%s] Retrying... (%d tries remaining)", e.getMessage(), url, retry));
+                }
+            }
+            --retry;
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage(), e);
+            }
         }
     }
     
@@ -122,6 +135,13 @@ public class Utils {
         }
 
         return result;
+    }
+
+    public static int idFromUrl(String href) {
+        Matcher matcher = ID_FROM_HREF.matcher(href);
+        if (!matcher.matches()) 
+            throw new RuntimeException(String.format("Failed to extract ID from [%s]", href));
+        return Integer.valueOf(matcher.group(1));
     }
     
 }

@@ -88,6 +88,12 @@ public class MarketOrderService {
                         solarSystem.setId(solarSystemId);
                         solarSystem.setName(location_context.read("$.solarSystem.name", String.class));
                         solarSystem.setSecurity(location_context.read("$.solarSystem.securityStatus", Float.class));
+                        if (solarSystem.getSecurity() < 0.0)
+                            solarSystem.setZone('N');
+                        else if (solarSystem.getSecurity() < 0.5)
+                            solarSystem.setZone('L');
+                        else
+                            solarSystem.setZone(' ');
                         solarSystem.setRegion(region);
                         solarSystemRepository.save(solarSystem);
                     }

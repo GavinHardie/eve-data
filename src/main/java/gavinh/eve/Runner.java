@@ -12,10 +12,16 @@ public class Runner {
     
     private static final Logger log = LoggerFactory.getLogger(Runner.class);
     
+    private final int totalPermits;
     private final Semaphore semaphore;
     
     public Runner(int threads) {
+        this.totalPermits = threads;
         semaphore = new Semaphore(threads);
+    }
+    
+    public boolean isFinished() {
+        return totalPermits == semaphore.availablePermits();
     }
     
     public synchronized void run(Runnable torun) {
