@@ -41,6 +41,7 @@ public class RunShoppingListReport implements CommandLineRunner {
         
         // Generate purchases
         shoppingListService.makePurchases(shoppingList, stationIds);
+        //shoppingListService.makeHighsecPurchases(shoppingList);         // TODO: Deal with HS islands
 
         // Print the results
         log.info("ShoppingListReport\n" + shoppingList.toString());

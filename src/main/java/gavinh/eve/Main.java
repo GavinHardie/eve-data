@@ -18,11 +18,12 @@ public class Main {
         /*
         load                        populate an empty DB
         market-orders               update todays market orders in the DB
-        run-shoppinglist-report     produce shopping list report
-        run-stockbreakdown-report   breakdown universe supply into price bands
+        run-shoppinglist-report     produce shopping list report on todays market orders
+        run-stockbreakdown-report   breakdown universe supply of todays orders into price bands
         */
         
-        application.setAdditionalProfiles("market-orders");
+//        application.setAdditionalProfiles("market-orders");
+        application.setAdditionalProfiles("run-shoppinglist-report");
 //        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);
     }

@@ -9,6 +9,7 @@ import gavinh.eve.data.StationRepository;
 import gavinh.eve.manufacturing.ShoppingList;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -48,29 +49,42 @@ public class ShoppingListService {
     }
     
     public void makePurchases(ShoppingList shoppingList, List<Integer> stationIds) {
-        for(ShoppingList.Item item : shoppingList.items) {
-            Map<Integer,ShoppingList.Purchase> purchases = makePurchases(item.itemTypeId, stationIds, item.quantity);
-            item.purchases = new ArrayList<>();
-            item.purchases.addAll(purchases.values());
-        }            
-    }
         
-    private Map<Integer,ShoppingList.Purchase> makePurchases(Long itemTypeId, List<Integer> stationIds, Integer quantity) {
-
-        ItemType itemType = itemTypeRepository.findOne(itemTypeId);
         List<Station> stations = new ArrayList<>();
         for(Integer stationId : stationIds) {
             stations.add(stationRepository.findOne(stationId));
         }
-
-        List<MarketOrder> marketOrders = new ArrayList<>();
-        for(Station station : stations) {
-            marketOrders.addAll(marketOrderRepository.findByFetchedAndBuysellAndItemTypeAndStation(TODAY, "sell", itemType, station));
-        }
         
-        Collections.sort(marketOrders, new MarketOrderComparator("sell"));
+        for(ShoppingList.Item item : shoppingList.items) {
 
-        Map<Integer,ShoppingList.Purchase> result = new HashMap<>();
+            ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
+            List<MarketOrder> marketOrders = new ArrayList<>();
+            for(Station station : stations) {
+                marketOrders.addAll(marketOrderRepository.findByFetchedAndBuysellAndItemTypeAndStation(TODAY, "sell", itemType, station));
+            }
+            Collections.sort(marketOrders, new MarketOrderComparator("sell"));
+
+            item.purchases = new ArrayList<>();
+            item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
+        }            
+    }
+    
+    public void makeHighsecPurchases(ShoppingList shoppingList) {
+        for(ShoppingList.Item item : shoppingList.items) {
+            
+            ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
+            List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeInHighsec(TODAY, "sell", itemType);
+            Collections.sort(marketOrders, new MarketOrderComparator("sell"));
+            
+            item.purchases = new ArrayList<>();
+            item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
+        }            
+    }
+        
+    
+    private Collection<ShoppingList.Purchase> processMarketOrders(ItemType itemType, List<MarketOrder> marketOrders, int quantity) {
+        
+        Map<Integer,ShoppingList.Purchase> result = new HashMap<>();        // StationId,Purchase
         
         int outstanding = quantity;
         for(MarketOrder marketOrder : marketOrders) {
@@ -93,7 +107,7 @@ public class ShoppingListService {
         for(ShoppingList.Purchase purchase : result.values()) {
             purchase.outOfStock = outstanding > 0;
         }
-        return result;
+        return result.values();
     }
     
     static private class MarketOrderComparator implements Comparator<MarketOrder> {
