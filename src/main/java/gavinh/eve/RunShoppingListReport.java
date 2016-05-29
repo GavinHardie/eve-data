@@ -40,8 +40,9 @@ public class RunShoppingListReport implements CommandLineRunner {
         ShoppingList shoppingList = ShoppingListFactory.getShoppingList();
         
         // Generate purchases
-        shoppingListService.makePurchases(shoppingList, stationIds);
-        //shoppingListService.makeHighsecPurchases(shoppingList);         // TODO: Deal with HS islands
+        //shoppingListService.makePurchases(shoppingList, MarketHub.Jita.getStationId());     // Buy everything at Jita
+        shoppingListService.makePurchases(shoppingList, stationIds);                        // Shop for best price across 5 hubs
+        //shoppingListService.makeHighsecPurchases(shoppingList);                             // Shop for best price across HS
 
         // Print the results
         log.info("ShoppingListReport\n" + shoppingList.toString());

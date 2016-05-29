@@ -40,12 +40,25 @@ public class ShoppingListService {
     private ItemTypeRepository itemTypeRepository;
 
     private final String TODAY;
+    private static final String ORDER_TYPE = "sell";
     
     public ShoppingListService() {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         TODAY = sdf.format(new Date());
         
+    }
+    
+    public void makePurchases(ShoppingList shoppingList, Integer stationId) {
+        Station station = stationRepository.findOne(stationId);
+        
+        for(ShoppingList.Item item : shoppingList.items) {
+            ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
+            List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeAndStation(TODAY, ORDER_TYPE, itemType, station);
+            Collections.sort(marketOrders, new MarketOrderComparator(ORDER_TYPE));
+            item.purchases = new ArrayList<>();
+            item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
+        }
     }
     
     public void makePurchases(ShoppingList shoppingList, List<Integer> stationIds) {
@@ -60,9 +73,9 @@ public class ShoppingListService {
             ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
             List<MarketOrder> marketOrders = new ArrayList<>();
             for(Station station : stations) {
-                marketOrders.addAll(marketOrderRepository.findByFetchedAndBuysellAndItemTypeAndStation(TODAY, "sell", itemType, station));
+                marketOrders.addAll(marketOrderRepository.findByFetchedAndBuysellAndItemTypeAndStation(TODAY, ORDER_TYPE, itemType, station));
             }
-            Collections.sort(marketOrders, new MarketOrderComparator("sell"));
+            Collections.sort(marketOrders, new MarketOrderComparator(ORDER_TYPE));
 
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
@@ -73,8 +86,8 @@ public class ShoppingListService {
         for(ShoppingList.Item item : shoppingList.items) {
             
             ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
-            List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeInHighsec(TODAY, "sell", itemType);
-            Collections.sort(marketOrders, new MarketOrderComparator("sell"));
+            List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeInHighsec(TODAY, ORDER_TYPE, itemType);
+            Collections.sort(marketOrders, new MarketOrderComparator(ORDER_TYPE));
             
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));

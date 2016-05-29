@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Profile;
 @Profile("market-orders")
 public class ApiMarketOrders implements CommandLineRunner {
 
-    private static final int CACHE_HOURS = 2;
-    private static final int NUM_THREADS = 10;
+    private static final int CACHE_HOURS = 1;
+    private static final int NUM_THREADS = 50;
     
     private static final Logger log = LoggerFactory.getLogger(ApiMarketOrders.class);
     private static final String[] orderTypes = new String[] { "buy", "sell" };
