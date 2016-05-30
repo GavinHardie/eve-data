@@ -1,6 +1,7 @@
 package gavinh.eve.service;
 
 import com.jayway.jsonpath.DocumentContext;
+import gavinh.eve.ApiLoad;
 import gavinh.eve.Utils;
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
@@ -77,26 +78,19 @@ public class LoadService {
         }
     }
     
-    public void loadItemTypes(String marketgroups_href) {
-        // Process marketGroups, deal with pagination
-        DocumentContext marketgroups_context = Utils.decodeAndGet(marketgroups_href);
-        while(marketgroups_context != null) {
-            List<String> marketgroup_maps = marketgroups_context.read("$.items[?(!@.parentGroup)].types.href");
-            for(String types_href : marketgroup_maps) {
-                // Process the itemTypes, deal with pagination
-                DocumentContext type_context = Utils.get(types_href);
-                while(type_context != null) {
-                    List<Map<String,Object>> type_maps = type_context.read("$.items[*].type");
-                    for(Map<String,Object> type_map : type_maps) {
-                        ItemType itemType = new ItemType();
-                        itemType.setId(Utils.mapPath(Integer.class, type_map, "id"));
-                        itemType.setName(Utils.mapPath(String.class, type_map, "name"));
-                        itemTypeRepository.save(itemType);
-                    }
-                    type_context = Utils.decodeAndGet(type_context.read("$.next.href"));
-                }
+    public void loadItemType(String types_href) {
+        DocumentContext types_context = Utils.decodeAndGet(types_href);
+        while(types_context != null) {
+            List<Map<String,Object>> type_maps = types_context.read("$.items[*].type");
+            for(Map<String,Object> type_map : type_maps) {
+                ItemType itemType = new ItemType();
+                itemType.setId(Utils.mapPath(Long.class, type_map, "id"));
+                itemType.setName(Utils.mapPath(String.class, type_map, "name"));
+                itemType.setHref(Utils.mapPath(String.class, type_map, "href"));
+                itemType.setVolume(-1.0f);
+                itemTypeRepository.save(itemType);
             }
-            marketgroups_context = Utils.decodeAndGet(marketgroups_context.read("$.next.href"));
+            types_context = Utils.decodeAndGet(types_context.read("$.next.href"));
         }
     }
 

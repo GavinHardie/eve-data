@@ -22,10 +22,10 @@ public class Main {
         run-stockbreakdown-report   breakdown universe supply of todays orders into price bands
         */
         
-//        application.setAdditionalProfiles("load");
+        application.setAdditionalProfiles("load");
 //        application.setAdditionalProfiles("market-orders");
 //        application.setAdditionalProfiles("run-shoppinglist-report");
-        application.setAdditionalProfiles("run-stockbreakdown-report");
+//        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);
     }
 

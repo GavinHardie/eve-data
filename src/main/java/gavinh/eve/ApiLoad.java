@@ -19,7 +19,7 @@ public class ApiLoad implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(ApiLoad.class);
     
-    private static final int NUM_THREADS = 10;
+    private static final int NUM_THREADS = 20;
     private static final String ROOT_URL = "https://crest-tq.eveonline.com";
 
     @Autowired
@@ -36,7 +36,17 @@ public class ApiLoad implements CommandLineRunner {
         DocumentContext context = Utils.get(ROOT_URL);
         String regions_href = context.read("$.regions.href", String.class);
         String marketgroups_href = context.read("$.marketGroups.href", String.class);
-        
+
+        log.info("Loading 12965 itemtypes (approx 12 minutes) ...");
+        DocumentContext marketgroups_context = Utils.decodeAndGet(marketgroups_href);
+        while(marketgroups_context != null) {
+            List<String> marketgroup_maps = marketgroups_context.read("$.items[?(!@.parentGroup)].types.href");
+            for(String types_href : marketgroup_maps) {
+                runner.run(new LoadItemtype(types_href));
+            }
+            marketgroups_context = Utils.decodeAndGet(marketgroups_context.read("$.next.href"));
+        }
+
         // Process regions, deal with pagination
         log.info("Loading 67 regions and 5431 solarsystems (approx 10 minutes) ...");
         DocumentContext regions_context = Utils.decodeAndGet(regions_href);
@@ -51,9 +61,6 @@ public class ApiLoad implements CommandLineRunner {
             regions_context = Utils.decodeAndGet(regions_context.read("$.next.href"));
         }
 
-        log.info("Loading 12965 itemtypes (approx 2 minutes) ...");
-        loadService.loadItemTypes(marketgroups_href);
-        
         while(!runner.isFinished()) {
             Thread.sleep(1000);
         }
@@ -101,5 +108,19 @@ public class ApiLoad implements CommandLineRunner {
             loadService.loadStargates(solarSystem);
         }
         
+    }
+    
+    public class LoadItemtype implements Runnable {
+        
+        private final String types_href;
+        
+        LoadItemtype(String types_href) {
+            this.types_href = types_href;
+        }
+        
+        @Override
+        public void run() {
+            loadService.loadItemType(types_href);
+        }
     }
 }

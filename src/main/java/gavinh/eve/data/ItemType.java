@@ -14,6 +14,11 @@ public class ItemType implements Serializable {
     @Column(length=255, nullable=false)
     private String name;
 
+    @Column(length=255, nullable=false)
+    private String href;
+    
+    private float volume;
+    
     public long getId() {
         return id;
     }
@@ -29,6 +34,20 @@ public class ItemType implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
-    
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public void setVolume(float volume) {
+        this.volume = volume;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
 }

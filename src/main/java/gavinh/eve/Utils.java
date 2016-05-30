@@ -39,7 +39,7 @@ public class Utils {
     public static DocumentContext get(String url) {
         if (url == null)
             return null;
-        int retry = 10;
+        int retry = 40;
         while(true) {
             try {
                 String json = REST_TEMPLATE.getForObject(url, String.class);
@@ -52,9 +52,8 @@ public class Utils {
                     log.info(String.format("[%s] while getting [%s] Retrying... (%d tries remaining)", e.getMessage(), url, retry));
                 }
             }
-            --retry;
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 log.error(e.getMessage(), e);
             }
