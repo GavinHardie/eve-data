@@ -37,7 +37,7 @@ public class ApiLoad implements CommandLineRunner {
         String regions_href = context.read("$.regions.href", String.class);
         String marketgroups_href = context.read("$.marketGroups.href", String.class);
 
-        log.info("Loading 12965 itemtypes (approx 12 minutes) ...");
+        log.info("Loading 12965 itemtypes ...");
         DocumentContext marketgroups_context = Utils.decodeAndGet(marketgroups_href);
         while(marketgroups_context != null) {
             List<String> marketgroup_maps = marketgroups_context.read("$.items[?(!@.parentGroup)].types.href");
@@ -65,7 +65,7 @@ public class ApiLoad implements CommandLineRunner {
             Thread.sleep(1000);
         }
         
-        log.info("Loading 13826 stargates (approx 30 minutes) ...");
+        log.info("Loading 13826 stargates (approx 15 minutes) ...");
         for(SolarSystem solarSystem : solarSystemRepository.findAll()) {
             runner.run(new LoadStargates(solarSystem));
         }
