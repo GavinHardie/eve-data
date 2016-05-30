@@ -7,11 +7,12 @@ import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.data.Station;
 import gavinh.eve.data.StationRepository;
 import gavinh.eve.manufacturing.ShoppingList;
+import gavinh.eve.utils.MarketOrderComparator;
+import gavinh.eve.utils.Purchase;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ShoppingListService {
             
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
-            Collections.sort(item.purchases, new PurchaseComparator(ORDER_TYPE));
+            Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
         }
     }
     
@@ -83,7 +84,7 @@ public class ShoppingListService {
 
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
-            Collections.sort(item.purchases, new PurchaseComparator(ORDER_TYPE));
+            Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
         }            
     }
     
@@ -96,22 +97,22 @@ public class ShoppingListService {
             
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
-            Collections.sort(item.purchases, new PurchaseComparator(ORDER_TYPE));
+            Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
         }            
     }
         
     
-    private Collection<ShoppingList.Purchase> processMarketOrders(ItemType itemType, List<MarketOrder> marketOrders, int quantity) {
+    private Collection<Purchase> processMarketOrders(ItemType itemType, List<MarketOrder> marketOrders, int quantity) {
         
-        Map<Integer,ShoppingList.Purchase> result = new HashMap<>();        // StationId,Purchase
+        Map<Integer,Purchase> result = new HashMap<>();        // StationId,Purchase
         
         int outstanding = quantity;
         for(MarketOrder marketOrder : marketOrders) {
             int q = Math.min(marketOrder.getQuantity(), outstanding);
             if (q > 0) {
-                ShoppingList.Purchase purchase = result.get(marketOrder.getStation().getId());
+                Purchase purchase = result.get(marketOrder.getStation().getId());
                 if (purchase == null) {
-                    purchase = new ShoppingList.Purchase();
+                    purchase = new Purchase();
                     purchase.station = marketOrder.getStation();
                     purchase.itemType = itemType;
                     purchase.minPrice = marketOrder.getPrice();
@@ -123,52 +124,10 @@ public class ShoppingListService {
                 outstanding -= q;
             }
         }
-        for(ShoppingList.Purchase purchase : result.values()) {
+        for(Purchase purchase : result.values()) {
             purchase.outOfStock = outstanding > 0;
         }
         return result.values();
     }
     
-    private class PurchaseComparator implements Comparator<ShoppingList.Purchase> {
-
-        private final String orderType;
-        
-        public PurchaseComparator(String orderType) {
-            this.orderType = orderType;
-        }
-        
-        @Override
-        public int compare(ShoppingList.Purchase o1, ShoppingList.Purchase o2) {
-            switch (orderType) {
-                case "sell":
-                    return Float.compare(o1.minPrice, o2.minPrice);
-                case "buy":
-                    return Float.compare(o2.minPrice, o1.minPrice);
-                default:
-                    throw new RuntimeException("Unrecognised ordertype - must be buy or sell");
-                            
-            }
-        }
-    }
-    
-    private class MarketOrderComparator implements Comparator<MarketOrder> {
-    
-        private final String orderType;
-        
-        public MarketOrderComparator(String orderType) {
-            this.orderType = orderType;
-        }
-        
-        @Override
-        public int compare(MarketOrder o1, MarketOrder o2) {
-            switch (orderType) {
-                case "sell":
-                    return Float.compare(o1.getPrice(), o2.getPrice());
-                case "buy":
-                    return Float.compare(o2.getPrice(), o1.getPrice());
-                default:
-                    throw new RuntimeException("Unrecognised ordertype - must be buy or sell");
-            }
-        }
-    }
 }

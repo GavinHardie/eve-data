@@ -20,11 +20,13 @@ public class Main {
         market-orders               update todays market orders in the DB
         run-shoppinglist-report     produce shopping list report on todays market orders
         run-stockbreakdown-report   breakdown universe supply of todays orders into price bands
+        run-direct-sell-report      list the best buy orders for direct sell
         */
         
 //        application.setAdditionalProfiles("load");
 //        application.setAdditionalProfiles("market-orders");
-        application.setAdditionalProfiles("run-shoppinglist-report");
+//        application.setAdditionalProfiles("run-shoppinglist-report");
+        application.setAdditionalProfiles("run-direct-sell-report");
 //        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);
     }

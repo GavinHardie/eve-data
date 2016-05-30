@@ -7,6 +7,7 @@ package gavinh.eve.manufacturing;
 
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.Station;
+import gavinh.eve.utils.Purchase;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,15 +32,6 @@ public class ShoppingList {
         }
     }
     
-    public static class Purchase {
-        public Station station;
-        public ItemType itemType;
-        public float minPrice;
-        public float maxPrice;
-        public float totalCost;
-        public int totalQuantity;
-        public boolean outOfStock;
-    }
  
     @Override
     public String toString() {
@@ -47,7 +39,7 @@ public class ShoppingList {
         float totalCost = 0.0f;
         for(ShoppingList.Item item : items) {
             boolean first = true;
-            for(ShoppingList.Purchase purchase : item.purchases) {
+            for(Purchase purchase : item.purchases) {
                 if (first) {
                     result.append(String.format("%,d %s [%d]\n", item.quantity, purchase.itemType.getName(), purchase.itemType.getId()));
                     first = false;
