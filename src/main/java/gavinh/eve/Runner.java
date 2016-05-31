@@ -20,8 +20,13 @@ public class Runner {
         semaphore = new Semaphore(threads);
     }
     
-    public boolean isFinished() {
-        return totalPermits == semaphore.availablePermits();
+    public void finish() {
+        try {
+            semaphore.acquire(totalPermits);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        semaphore.release(totalPermits);
     }
     
     public synchronized void run(Runnable torun) {
@@ -39,7 +44,7 @@ public class Runner {
         public Slave(Runnable torun) {
             this.torun = torun;
         }
-
+        
         @Override
         public void run() {
             try {

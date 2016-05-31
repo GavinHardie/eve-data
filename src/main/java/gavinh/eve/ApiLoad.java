@@ -61,18 +61,14 @@ public class ApiLoad implements CommandLineRunner {
             regions_context = Utils.decodeAndGet(regions_context.read("$.next.href"));
         }
 
-        while(!runner.isFinished()) {
-            Thread.sleep(1000);
-        }
+        runner.finish();
         
         log.info("Loading 13826 stargates (approx 15 minutes) ...");
         for(SolarSystem solarSystem : solarSystemRepository.findAll()) {
             runner.run(new LoadStargates(solarSystem));
         }
-        
-        while(!runner.isFinished()) {
-            Thread.sleep(1000);
-        }
+
+        runner.finish();
 
         log.info("Identifying highsec islands ...");
         loadService.identifyHighsecIslands();
