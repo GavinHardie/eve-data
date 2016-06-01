@@ -41,10 +41,19 @@ public class RunShoppingListReport implements CommandLineRunner {
         
         // Generate purchases
         //shoppingListService.makePurchases(shoppingList, MarketHub.Jita.getStationId());     // Buy everything at Jita
-        //shoppingListService.makePurchases(shoppingList, stationIds);                        // Shop for best price across 5 hubs
-        shoppingListService.makeHighsecPurchases(shoppingList);                             // Shop for best price across HS
+        shoppingListService.makePurchases(shoppingList, stationIds);                        // Shop for best price across 5 hubs
+        //shoppingListService.makeHighsecPurchases(shoppingList);                             // Shop for best price across HS
 
         // Print the results
         log.info("ShoppingListReport\n" + shoppingList.toString());
+        
+        float totalCost = shoppingList.getTotalPrice();
+        totalCost *= 1.03;          // 3% manufacturing slot cost
+        totalCost *= 1.035;         // 3.5% tax when selling
+        totalCost += 150000000;     // Fuel
+        
+        float costPer = totalCost / shoppingList.output.quantity;
+        
+        log.info(String.format("Total cost [%,.2f] cost per item [%,.2f]", totalCost, costPer));
     }
 }

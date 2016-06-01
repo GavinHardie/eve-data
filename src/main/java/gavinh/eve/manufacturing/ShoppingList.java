@@ -52,4 +52,15 @@ public class ShoppingList {
         result.append(String.format("Total cost %,.2f", totalCost));
         return result.toString();
     }
+    
+    public float getTotalPrice() {
+        float result = 0.0f;
+        for(Item item : items) {
+            for(Purchase purchase : item.purchases) {
+                result += purchase.totalCost;
+            }
+        }
+        return result;
+    }
+    
 }
