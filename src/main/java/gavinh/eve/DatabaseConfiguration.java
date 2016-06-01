@@ -1,8 +1,9 @@
 package gavinh.eve;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,7 +35,15 @@ public class DatabaseConfiguration {
     @Bean
     @ConfigurationProperties(prefix = "datasource")
     public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/eve-data");
+        config.setUsername("eve");
+        config.setPassword("password");
+//        config.addDataSourceProperty("cachePrepStmts", "true");
+//        config.addDataSourceProperty("prepStmtCacheSize", "250");
+//        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        HikariDataSource ds = new HikariDataSource(config);
+        return ds;
     }
 
     @Bean
