@@ -1,6 +1,7 @@
 package gavinh.eve.service;
 
 import com.jayway.jsonpath.DocumentContext;
+import gavinh.eve.Runner;
 import gavinh.eve.Utils;
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
@@ -10,10 +11,12 @@ import gavinh.eve.data.MarketApiCallRepository;
 import gavinh.eve.data.MarketOrder;
 import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.data.Region;
+import gavinh.eve.data.RegionRepository;
 import gavinh.eve.data.SolarSystem;
 import gavinh.eve.data.SolarSystemRepository;
 import gavinh.eve.data.Station;
 import gavinh.eve.data.StationRepository;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +34,9 @@ public class MarketOrderService {
 
     private static final Logger log = LoggerFactory.getLogger(MarketOrderService.class);
     
+    private static final String[] orderTypes = new String[] { "buy", "sell" };
+    private static final int CACHE_HOURS = 2;
+    
     @Autowired
     private ItemTypeRepository itemTypeRepository;
     
@@ -45,8 +51,59 @@ public class MarketOrderService {
 
     @Autowired
     private MarketOrderRepository marketOrderRepository;
+
+    @Autowired
+    private RegionRepository regionRepository;
     
-    public void fetchOrders(int CACHE_HOURS, String TODAY, Long itemTypeId, String orderType, Region region) {
+    public void fetchOrders(Long itemTypeId) {
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String fetched = sdf.format(new Date());
+        
+        Runner runner = new Runner(20);
+        Iterable<Region> regions = regionRepository.findAll();
+        for(Region region : regions) {
+            runner.run(new FetchOrders(fetched, itemTypeId, region));
+        }
+        runner.finish();
+    }
+    
+    public class FetchOrders implements Runnable {
+        
+        private final String fetched;
+        private final Long itemTypeId;
+        private final Region region;
+        
+        public FetchOrders(String fetched, Long itemTypeId, Region region) {
+            this.fetched = fetched;
+            this.itemTypeId = itemTypeId;
+            this.region = region;
+        }
+        
+        @Override
+        public void run() {
+            for(String orderType : orderTypes) {
+                int retry = 10;
+                while(retry > 0) {
+                    try {
+                        fetchOrders(fetched, itemTypeId, orderType, region);
+                        retry = 0;
+                    } catch (RuntimeException e) {
+                        log.error(String.format("[%d] [%s]", retry--, e.getMessage()));
+                    }
+                    if (retry > 0) {
+                        try {
+                            Thread.sleep(15000);
+                        } catch (InterruptedException e) {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public void fetchOrders(String fetched, Long itemTypeId, String orderType, Region region) {
 
         Date nowLessCache = new Date(System.currentTimeMillis() - (CACHE_HOURS * 60 * 60 * 1000));
         
@@ -64,7 +121,7 @@ public class MarketOrderService {
         }
 
         // Delete any records in the DB from requests made earlier today
-        marketOrderRepository.deleteByFetchedAndBuysellAndItemTypeAndRegion(TODAY, orderType, itemType, region);
+        marketOrderRepository.deleteByFetchedAndBuysellAndItemTypeAndRegion(fetched, orderType, itemType, region);
 
         String marketorders_url = String.format("https://crest-tq.eveonline.com/market/%d/orders/%s/?type=http://crest-tq.eveonline.com/types/%d/", region.getId(), orderType, itemType.getId());
         DocumentContext marketorders_context = Utils.get(marketorders_url);
@@ -117,7 +174,7 @@ public class MarketOrderService {
                 marketOrder.setQuantity(Utils.mapPath(Integer.class, marketorder_map, "volume"));
                 marketOrder.setPrice(Utils.mapPath(Float.class, marketorder_map, "price"));
                 marketOrder.setBuysell(orderType);
-                marketOrder.setFetched(TODAY);
+                marketOrder.setFetched(fetched);
                 marketOrder.setItemType(itemType);
                 marketOrder.setRegion(region);
                 marketOrder.setStation(station);

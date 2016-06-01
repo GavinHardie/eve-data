@@ -24,9 +24,9 @@ public class Main {
         */
         
 //        application.setAdditionalProfiles("load");
-//        application.setAdditionalProfiles("market-orders");
+        application.setAdditionalProfiles("market-orders");
 //        application.setAdditionalProfiles("run-shoppinglist-report");
-        application.setAdditionalProfiles("run-direct-sell-report");
+//        application.setAdditionalProfiles("run-direct-sell-report");
 //        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);
     }
