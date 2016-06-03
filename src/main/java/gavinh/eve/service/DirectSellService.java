@@ -9,8 +9,10 @@ import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
 import gavinh.eve.data.MarketOrder;
 import gavinh.eve.data.MarketOrderRepository;
+import gavinh.eve.manufacturing.ITEM_TYPE;
 import gavinh.eve.utils.MarketOrderComparator;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,17 +32,28 @@ public class DirectSellService {
     @Autowired
     private ItemTypeRepository itemTypeRepository;
     
-    public List<MarketOrder> getBuyOrders(Long itemTypeId) {
+    public List<MarketOrder> getAllBuyOrders(ITEM_TYPE item_type) {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fetched = sdf.format(new Date());
         
-        ItemType itemType = itemTypeRepository.findOne(itemTypeId);
+        ItemType itemType = itemTypeRepository.findOne((long)item_type.getItemTypeId());
         List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeInHighsec(fetched, "buy", itemType);
         
         Collections.sort(marketOrders, new MarketOrderComparator("buy"));
         
-        int max = Math.min(marketOrders.size(), 20);
-        return marketOrders.subList(0, max - 1);
+        return marketOrders;
+    }
+
+    public List<MarketOrder> getBuyOrders(ITEM_TYPE item_type, int quantity) {
+        List<MarketOrder> marketOrders = getAllBuyOrders(item_type);
+        List<MarketOrder> result = new ArrayList<>();
+        for(MarketOrder marketOrder : marketOrders) {
+            result.add(marketOrder);
+            quantity -= marketOrder.getQuantity();
+            if (quantity <= 0)
+                break;
+        }
+        return result;
     }
 }

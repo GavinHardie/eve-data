@@ -50,7 +50,7 @@ public class ShoppingListService {
         
     }
     
-    public void makePurchases(ShoppingList shoppingList, Integer stationId) {
+    public ShoppingList makePurchases(ShoppingList shoppingList, Integer stationId) {
         Station station = stationRepository.findOne(stationId);
         
         for(ShoppingList.Item item : shoppingList.items) {
@@ -63,9 +63,10 @@ public class ShoppingListService {
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
             Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
         }
+        return shoppingList;
     }
     
-    public void makePurchases(ShoppingList shoppingList, List<Integer> stationIds) {
+    public ShoppingList makePurchases(ShoppingList shoppingList, List<Integer> stationIds) {
         
         List<Station> stations = new ArrayList<>();
         for(Integer stationId : stationIds) {
@@ -85,10 +86,11 @@ public class ShoppingListService {
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
             Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
-        }            
+        }
+        return shoppingList;
     }
     
-    public void makeHighsecPurchases(ShoppingList shoppingList) {
+    public ShoppingList makeHighsecPurchases(ShoppingList shoppingList) {
         for(ShoppingList.Item item : shoppingList.items) {
             
             ItemType itemType = itemTypeRepository.findOne(item.itemTypeId);
@@ -98,7 +100,8 @@ public class ShoppingListService {
             item.purchases = new ArrayList<>();
             item.purchases.addAll(processMarketOrders(itemType, marketOrders, item.quantity));
             Collections.sort(item.purchases, new Purchase.PurchaseComparator(ORDER_TYPE));
-        }            
+        }
+        return shoppingList;
     }
         
     

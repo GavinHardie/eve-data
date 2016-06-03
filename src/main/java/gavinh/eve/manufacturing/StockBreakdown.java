@@ -22,7 +22,7 @@ public class StockBreakdown {
     
     static {
         marketHubStationIds = new ArrayList<>();
-        for(MarketHub hub : MarketHub.values()) {
+        for(MARKET_HUB hub : MARKET_HUB.values()) {
             marketHubStationIds.add(hub.getStationId());
         }
     }
@@ -54,7 +54,7 @@ public class StockBreakdown {
         }
         if (selectedBand == null)
             throw new RuntimeException(String.format("Couldnt find a band to cover %f", price));
-        if (station.getId() == MarketHub.Jita.getStationId()) {
+        if (station.getId() == MARKET_HUB.Jita.getStationId()) {
             add(selectedBand.quantity, StockZone.Jita, quantity);
             add(totals, StockZone.Jita, quantity);
         } else if (marketHubStationIds.contains(station.getId())) {

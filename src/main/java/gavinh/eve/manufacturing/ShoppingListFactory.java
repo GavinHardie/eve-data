@@ -25,7 +25,9 @@ public class ShoppingListFactory {
 
     private static final Logger log = LoggerFactory.getLogger(ShoppingListFactory.class);
     
-    public static ShoppingList getShoppingList() {
+    public static ShoppingList getShoppingList(ITEM_TYPE itemType, int quantity) {
+        // Params should define the output and then the items should be 
+        // calculated by recursivly examining blueprint
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.output = new ShoppingList.Item(11578, 3520);
         shoppingList.items.add(new ShoppingList.Item(16670, 1625602));

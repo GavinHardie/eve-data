@@ -6,6 +6,7 @@
 package gavinh.eve;
 
 import gavinh.eve.data.MarketOrder;
+import gavinh.eve.manufacturing.ITEM_TYPE;
 import gavinh.eve.service.DirectSellService;
 import java.util.List;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class RunDirectSellReport implements CommandLineRunner {
     
     @Override
     public void run(String... strings) throws Exception {
-        List<MarketOrder> marketOrders = directSellService.getBuyOrders(40520L);
+        List<MarketOrder> marketOrders = directSellService.getBuyOrders(ITEM_TYPE.CovertOpsCloak, 3520);
         for(MarketOrder marketOrder : marketOrders) {
             log.info(String.format("%s will buy [%d] at [%,.2f]", marketOrder.getStation().getSolarSystem().getName(), marketOrder.getQuantity(), marketOrder.getPrice()));
         }
