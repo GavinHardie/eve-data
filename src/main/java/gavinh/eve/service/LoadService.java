@@ -2,9 +2,10 @@ package gavinh.eve.service;
 
 import com.jayway.jsonpath.DocumentContext;
 import gavinh.eve.ApiLoad;
-import gavinh.eve.Utils;
+import gavinh.eve.utils.Utils;
 import gavinh.eve.data.ItemType;
 import gavinh.eve.data.ItemTypeRepository;
+import gavinh.eve.data.MarketGroupRepository;
 import gavinh.eve.data.Region;
 import gavinh.eve.data.RegionRepository;
 import gavinh.eve.data.SolarSystem;
@@ -39,12 +40,20 @@ public class LoadService {
 
     @Autowired
     private StargateRepository stargateRepository;
+
+    @Autowired
+    private MarketGroupRepository marketGroupRepository;
     
     public void loadRegion(Map<String,Object> region_map) {
 
+        Integer id = Utils.mapPath(Integer.class, region_map, "id");
+        Region region = regionRepository.findOne(id);
+        if (region != null)
+            return;
+        
         // Create the region
-        Region region = new Region();
-        region.setId(Utils.mapPath(Integer.class, region_map, "id"));
+        region = new Region();
+        region.setId(id);
         region.setName(Utils.mapPath(String.class, region_map, "name"));
         region.setHref(Utils.mapPath(String.class, region_map, "href"));
         regionRepository.save(region);
@@ -78,23 +87,33 @@ public class LoadService {
         }
     }
     
-    public void loadItemType(String types_href) {
-        DocumentContext types_context = Utils.decodeAndGet(types_href);
-        while(types_context != null) {
-            List<Map<String,Object>> type_maps = types_context.read("$.items[*].type");
-            for(Map<String,Object> type_map : type_maps) {
-                ItemType itemType = new ItemType();
-                itemType.setId(Utils.mapPath(Long.class, type_map, "id"));
-                itemType.setName(Utils.mapPath(String.class, type_map, "name"));
-                itemType.setHref(Utils.mapPath(String.class, type_map, "href"));
-                itemType.setVolume(-1.0f);
-                itemTypeRepository.save(itemType);
-            }
-            types_context = Utils.decodeAndGet(types_context.read("$.next.href"));
-        }
+    public void loadItemType(Integer id, String name, String href, Integer marketGroupId) {
+        
+        ItemType itemType = itemTypeRepository.findOne(id);
+        if (itemType != null)
+            return;
+        
+        DocumentContext types_context = Utils.decodeAndGet(href);
+        if (types_context == null)
+            return;
+        
+        Float volume = types_context.read("$.volume", Float.class);
+
+        itemType = new ItemType();
+        itemType.setHref(href);
+        itemType.setId(id);
+        itemType.setName(name);
+        itemType.setVolume(volume);
+        itemType.setMarketGroup(marketGroupRepository.findOne(marketGroupId));
+        itemTypeRepository.save(itemType);
     }
 
     public void loadStargates(SolarSystem solarSystem) {
+        
+        List<Stargate> stargates = stargateRepository.findBySolarSystem(solarSystem);
+        if (stargates != null && !stargates.isEmpty())
+            return;
+        
         DocumentContext solarsystem_context = Utils.decodeAndGet(solarSystem.getHref());
         List<String> stargate_hrefs = solarsystem_context.read("$.stargates[*].href");
         StringBuilder builder = new StringBuilder();

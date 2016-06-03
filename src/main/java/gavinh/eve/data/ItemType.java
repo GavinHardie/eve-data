@@ -4,12 +4,13 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class ItemType implements Serializable {
     
     @Id
-    private long id;
+    private int id;
     
     @Column(length=255, nullable=false)
     private String name;
@@ -19,11 +20,14 @@ public class ItemType implements Serializable {
     
     private float volume;
     
-    public long getId() {
+    @ManyToOne(optional=false)
+    private MarketGroup marketGroup;
+    
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -50,4 +54,13 @@ public class ItemType implements Serializable {
     public void setHref(String href) {
         this.href = href;
     }
+
+    public MarketGroup getMarketGroup() {
+        return marketGroup;
+    }
+
+    public void setMarketGroup(MarketGroup marketGroup) {
+        this.marketGroup = marketGroup;
+    }
+    
 }

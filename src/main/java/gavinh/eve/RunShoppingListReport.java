@@ -67,12 +67,12 @@ public class RunShoppingListReport implements CommandLineRunner {
     }
     
     public float getUnitCost(ShoppingList shoppingList) {
-        float totalCost = shoppingList.getTotalPrice();
+        float totalCost = shoppingList.getTotalCost();
         totalCost *= 1.03;          // 3% manufacturing slot cost
         totalCost *= 1.035;         // 3.5% tax when selling
-        totalCost += 150000000;     // Fuel
+        totalCost += 150000000.0;     // Fuel
         
-        float unitCost = totalCost / shoppingList.output.quantity;
+        float unitCost = totalCost / ((float) shoppingList.output.quantity);
         return unitCost;
     }
 }

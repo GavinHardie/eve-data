@@ -6,7 +6,7 @@
 package gavinh.eve.manufacturing;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
-import gavinh.eve.Utils;
+import gavinh.eve.utils.Utils;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Map;

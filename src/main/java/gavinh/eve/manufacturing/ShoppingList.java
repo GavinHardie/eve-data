@@ -1,20 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gavinh.eve.manufacturing;
 
-import gavinh.eve.data.ItemType;
-import gavinh.eve.data.Station;
 import gavinh.eve.utils.Purchase;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Gavin
- */
 public class ShoppingList {
 
     public Item output;
@@ -22,7 +11,7 @@ public class ShoppingList {
     
     static public class Item {
         
-        public final long itemTypeId;
+        public final int itemTypeId;
         public final int quantity;
         public List<Purchase> purchases;
         
@@ -53,7 +42,7 @@ public class ShoppingList {
         return result.toString();
     }
     
-    public float getTotalPrice() {
+    public float getTotalCost() {
         float result = 0.0f;
         for(Item item : items) {
             for(Purchase purchase : item.purchases) {

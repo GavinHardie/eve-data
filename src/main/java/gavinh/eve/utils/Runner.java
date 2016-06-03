@@ -1,4 +1,4 @@
-package gavinh.eve;
+package gavinh.eve.utils;
 
 import java.util.concurrent.Semaphore;
 import org.slf4j.Logger;

@@ -37,7 +37,7 @@ public class DirectSellService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fetched = sdf.format(new Date());
         
-        ItemType itemType = itemTypeRepository.findOne((long)item_type.getItemTypeId());
+        ItemType itemType = itemTypeRepository.findOne(item_type.getItemTypeId());
         List<MarketOrder> marketOrders = marketOrderRepository.findByFetchedAndBuysellAndItemTypeInHighsec(fetched, "buy", itemType);
         
         Collections.sort(marketOrders, new MarketOrderComparator("buy"));

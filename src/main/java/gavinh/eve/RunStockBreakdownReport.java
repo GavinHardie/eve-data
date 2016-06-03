@@ -34,7 +34,7 @@ public class RunStockBreakdownReport implements CommandLineRunner {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String TODAY = sdf.format(new Date());
 
-        ItemType itemType = itemTypeRepository.findOne(11578L);     // Covops Cloaks
+        ItemType itemType = itemTypeRepository.findOne(11578);     // Covops Cloaks
 
         StockBreakdown stockBreakdown = new StockBreakdown(itemType, 4000000, 100000, 30);
 

@@ -37,6 +37,7 @@ public class DatabaseConfiguration {
     public DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://localhost:5432/eve-data");
+        config.setMaximumPoolSize(50);
         config.setUsername("eve");
         config.setPassword("password");
 //        config.addDataSourceProperty("cachePrepStmts", "true");
