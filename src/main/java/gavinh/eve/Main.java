@@ -13,6 +13,16 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String args[]) {
+        
+        StringBuilder message = new StringBuilder();
+        message.append("Command line options are:\n");
+        message.append("-Dspring.profiles.active=load\n");
+        message.append("-Dspring.profiles.active=market-orders\n");
+        message.append("-Dspring.profiles.active=run-shoppinglist-report\n");
+        message.append("-Dspring.profiles.active=run-stockbreakdown-report\n");
+        message.append("-Dspring.profiles.active=run-direct-sell-report\n");
+        System.out.println(message.toString());
+        
         SpringApplication application = new SpringApplication(Main.class);
         
         /*
@@ -25,7 +35,7 @@ public class Main {
         
 //        application.setAdditionalProfiles("load");
 //        application.setAdditionalProfiles("market-orders");
-        application.setAdditionalProfiles("run-shoppinglist-report");
+//        application.setAdditionalProfiles("run-shoppinglist-report");
 //        application.setAdditionalProfiles("run-direct-sell-report");
 //        application.setAdditionalProfiles("run-stockbreakdown-report");
         application.run(args);

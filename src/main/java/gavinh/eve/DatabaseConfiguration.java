@@ -32,20 +32,18 @@ public class DatabaseConfiguration {
         return entityManagerFactoryBean;
     }
 
-    @Bean
-    @ConfigurationProperties(prefix = "datasource")
-    public DataSource dataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/eve-data");
-        config.setMaximumPoolSize(50);
-        config.setUsername("eve");
-        config.setPassword("password");
-//        config.addDataSourceProperty("cachePrepStmts", "true");
-//        config.addDataSourceProperty("prepStmtCacheSize", "250");
-//        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        HikariDataSource ds = new HikariDataSource(config);
-        return ds;
-    }
+// Datasource bean is autoconfigured from application.properties    
+//    @Bean
+//    @ConfigurationProperties(prefix = "datasource")
+//    public DataSource dataSource() {
+//        HikariConfig config = new HikariConfig();
+//        config.setJdbcUrl("jdbc:postgresql://localhost:5432/eve-data");
+//        config.setMaximumPoolSize(50);
+//        config.setUsername("eve");
+//        config.setPassword("password");
+//        HikariDataSource ds = new HikariDataSource(config);
+//        return ds;
+//    }
 
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
