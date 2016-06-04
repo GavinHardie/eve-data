@@ -8,10 +8,10 @@ package gavinh.eve;
 import gavinh.eve.data.MarketOrder;
 import gavinh.eve.manufacturing.ITEM_TYPE;
 import gavinh.eve.manufacturing.MARKET_HUB;
-import gavinh.eve.manufacturing.ShoppingList;
-import gavinh.eve.manufacturing.ShoppingListFactory;
+import gavinh.eve.manufacturing.StockList;
+import gavinh.eve.manufacturing.StockListFactory;
 import gavinh.eve.service.DirectSellService;
-import gavinh.eve.service.ShoppingListService;
+import gavinh.eve.service.StockListService;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class RunShoppingListReport implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(RunShoppingListReport.class);
     
     @Autowired
-    ShoppingListService shoppingListService;
+    StockListService stockListService;
     
     @Autowired
     DirectSellService directSellService;
@@ -42,37 +42,42 @@ public class RunShoppingListReport implements CommandLineRunner {
             stationIds.add(hub.getStationId());
         }
 
-        ITEM_TYPE item_type = ITEM_TYPE.CovertOpsCloak;
+        ITEM_TYPE itemType = ITEM_TYPE.CovertOpsCloak;
         int quantity = 3520;
         
         // Generate purchases
-        ShoppingList shoppingAtJita = shoppingListService.makePurchases(ShoppingListFactory.getShoppingList(item_type, quantity), MARKET_HUB.Jita.getStationId());
-        ShoppingList shoppingAtHubs = shoppingListService.makePurchases(ShoppingListFactory.getShoppingList(item_type, quantity), stationIds);
-        ShoppingList shoppingInHigh = shoppingListService.makeHighsecPurchases(ShoppingListFactory.getShoppingList(item_type, quantity));
+        StockList materialsStockList = StockListFactory.getStockList(itemType, quantity);
+        
+        stockListService.makePurchases(materialsStockList, MARKET_HUB.Jita.getStationId());
+        log.info(String.format("Unit cost [%,.2f], total cost [%,.2f] shopping at Jita", getPrice(materialsStockList) / quantity, getPrice(materialsStockList)));
+        
+        stockListService.makePurchases(materialsStockList, stationIds);
+        log.info(String.format("Unit cost [%,.2f], total cost [%,.2f] shopping at Hubs", getPrice(materialsStockList) / quantity, getPrice(materialsStockList)));
+        
+        stockListService.makeHighsecPurchases(materialsStockList);
+        log.info(String.format("Unit cost [%,.2f], total cost [%,.2f] shopping in High", getPrice(materialsStockList) / quantity, getPrice(materialsStockList)));
 
-        // Print the results
-        // log.info("ShoppingListReport\n" + shoppingList.toString());
+        StockList cloakStockList = new StockList();
+        cloakStockList.add(itemType.getItemTypeId(), quantity);
+        stockListService.makeSales(cloakStockList, stationIds);
+        log.info(String.format("Avg unit sell [%,.2f], total sell [%,.2f] at Hubs", getPrice(cloakStockList) / quantity, getPrice(cloakStockList)));
         
-        log.info(String.format("Unit cost shopping at Jita [%,.2f]", getUnitCost(shoppingAtJita)));
-        log.info(String.format("Unit cost shopping at Hubs [%,.2f]", getUnitCost(shoppingAtHubs)));
-        log.info(String.format("Unit cost shopping in High [%,.2f]", getUnitCost(shoppingInHigh)));
-        
-        List<MarketOrder> marketOrders = directSellService.getBuyOrders(ITEM_TYPE.CovertOpsCloak, 3520);
-        log.info(String.format("Buy order for [%d] [%s] in high:", quantity, item_type.toString()));
-        for(MarketOrder marketOrder : marketOrders) {
-            log.info(String.format("[%s] buys [%d] at [%,.2f] ", marketOrder.getStation().getSolarSystem().getName(),
-                                                              marketOrder.getQuantity(),
-                                                              marketOrder.getPrice()));
-        }
+        log.info(cloakStockList.toString());
+//        List<MarketOrder> marketOrders = directSellService.getBuyOrders(ITEM_TYPE.CovertOpsCloak, 3520);
+//        log.info(String.format("Buy order for [%d] [%s] in high:", quantity, itemType.toString()));
+//        for(MarketOrder marketOrder : marketOrders) {
+//            log.info(String.format("[%s] buys [%d] at [%,.2f] ", marketOrder.getStation().getSolarSystem().getName(),
+//                                                              marketOrder.getQuantity(),
+//                                                              marketOrder.getPrice()));
+//        }
     }
     
-    public float getUnitCost(ShoppingList shoppingList) {
-        float totalCost = shoppingList.getTotalCost();
+    public float getPrice(StockList shoppingList) {
+        float totalCost = shoppingList.getTotalPrice();
         totalCost *= 1.03;          // 3% manufacturing slot cost
         totalCost *= 1.035;         // 3.5% tax when selling
         totalCost += 150000000.0;     // Fuel
         
-        float unitCost = totalCost / ((float) shoppingList.output.quantity);
-        return unitCost;
+        return totalCost;
     }
 }

@@ -47,7 +47,7 @@ public class StockBreakdown {
     public void addStock(Station station, float price, int quantity) {
         StockBand selectedBand = null;
         for(StockBand stockBand : stockBands) {
-            if (stockBand.minPrice < price && stockBand.maxPrice >= price) {
+            if (stockBand.minPrice <= price && price < stockBand.maxPrice) {
                 selectedBand = stockBand;
                 break;
             }
@@ -119,9 +119,9 @@ public class StockBreakdown {
         
         public String getDesc() {
             if (maxPrice == Float.MAX_VALUE)
-                return String.format("%,.2f - Infinity", minPrice);
+                return String.format("[%,.2f - Infinity)", minPrice);
             else
-                return String.format("%,.2f - %,.2f", minPrice, maxPrice);
+                return String.format("[%,.2f - %,.2f)", minPrice, maxPrice);
         }
     }
 }

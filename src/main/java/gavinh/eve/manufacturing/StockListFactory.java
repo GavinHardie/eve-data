@@ -21,37 +21,36 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Gavin
  */
-public class ShoppingListFactory {
+public class StockListFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(ShoppingListFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(StockListFactory.class);
     
-    public static ShoppingList getShoppingList(ITEM_TYPE itemType, int quantity) {
+    public static StockList getStockList(ITEM_TYPE itemType, int quantity) {
         // Params should define the output and then the items should be 
         // calculated by recursivly examining blueprint
-        ShoppingList shoppingList = new ShoppingList();
-        shoppingList.output = new ShoppingList.Item(11578, 3520);
-        shoppingList.items.add(new ShoppingList.Item(16670, 1625602));
-        shoppingList.items.add(new ShoppingList.Item(20414, 1320));
-        shoppingList.items.add(new ShoppingList.Item(20419, 1320));
-        shoppingList.items.add(new ShoppingList.Item(2361, 9328));
-        shoppingList.items.add(new ShoppingList.Item(37, 1428152));
-        shoppingList.items.add(new ShoppingList.Item(40, 105578));
-        shoppingList.items.add(new ShoppingList.Item(36, 2415424));
-        shoppingList.items.add(new ShoppingList.Item(9842, 90948));
-        shoppingList.items.add(new ShoppingList.Item(11399, 83446));
-        shoppingList.items.add(new ShoppingList.Item(16681, 342646));
-        shoppingList.items.add(new ShoppingList.Item(38, 530906));
-        shoppingList.items.add(new ShoppingList.Item(16680, 1103719));
-        shoppingList.items.add(new ShoppingList.Item(33359, 191258));
-        shoppingList.items.add(new ShoppingList.Item(34205, 660));
-        shoppingList.items.add(new ShoppingList.Item(35, 19723792));
-        shoppingList.items.add(new ShoppingList.Item(11483, 7040));
-        shoppingList.items.add(new ShoppingList.Item(2349, 6226));
-        shoppingList.items.add(new ShoppingList.Item(16671, 1662748));
-        shoppingList.items.add(new ShoppingList.Item(9840, 90948));
-        shoppingList.items.add(new ShoppingList.Item(34, 50459728));
-        shoppingList.items.add(new ShoppingList.Item(39, 416042));
-        return shoppingList;
+        StockList stockList = new StockList();
+        stockList.add(16670, 1625602);
+        stockList.add(20414, 1320);
+        stockList.add(20419, 1320);
+        stockList.add(2361, 9328);
+        stockList.add(37, 1428152);
+        stockList.add(40, 105578);
+        stockList.add(36, 2415424);
+        stockList.add(9842, 90948);
+        stockList.add(11399, 83446);
+        stockList.add(16681, 342646);
+        stockList.add(38, 530906);
+        stockList.add(16680, 1103719);
+        stockList.add(33359, 191258);
+        stockList.add(34205, 660);
+        stockList.add(35, 19723792);
+        stockList.add(11483, 7040);
+        stockList.add(2349, 6226);
+        stockList.add(16671, 1662748);
+        stockList.add(9840, 90948);
+        stockList.add(34, 50459728);
+        stockList.add(39, 416042);
+        return stockList;
     }
     
     // 12105 makes 11578
