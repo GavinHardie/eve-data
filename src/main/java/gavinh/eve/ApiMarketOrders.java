@@ -6,7 +6,12 @@ import gavinh.eve.data.RegionRepository;
 import gavinh.eve.manufacturing.ITEM_TYPE;
 import gavinh.eve.service.MarketOrderService;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +42,11 @@ public class ApiMarketOrders implements CommandLineRunner {
         Runner runner = new Runner(20);
         Iterable<Region> regions = regionRepository.findAll();
         
-        for(Integer itemTypeId : ITEM_TYPE.covopRelatedGoods) {
+        Set<Integer> itemTypeIdToProcess = new HashSet<>();
+        itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.covopRelatedGoods));
+        itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.advancedComponents));
+        itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.tradeGoods));
+        for(Integer itemTypeId : itemTypeIdToProcess) {
             for(Region region : regions) {
                 runner.run(new FetchOrders(fetched, itemTypeId, region));
             }
