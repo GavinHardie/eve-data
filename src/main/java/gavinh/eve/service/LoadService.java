@@ -12,6 +12,8 @@ import gavinh.eve.data.SolarSystem;
 import gavinh.eve.data.SolarSystemRepository;
 import gavinh.eve.data.Stargate;
 import gavinh.eve.data.StargateRepository;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,6 +30,7 @@ public class LoadService {
     
     private static final Logger log = LoggerFactory.getLogger(LoadService.class);
     private static final Pattern STARGATE_NAME = Pattern.compile("Stargate \\(([^\\)]*)\\)");
+    private static final List<Integer> brokenItemTypes = Arrays.asList(new Integer[] { 2834, 3516, 4363, 11942, 32207, 32790, 32811 });
     
     @Autowired
     private RegionRepository regionRepository;
@@ -88,6 +91,11 @@ public class LoadService {
     }
     
     public void loadItemType(Integer id, String name, String href, Integer marketGroupId) {
+
+        if (brokenItemTypes.contains(id)) {
+            log.info(String.format("[%d] [%s] is one of the broken itemTypes.  Skipping it.", id, name));
+            return;
+        }
         
         ItemType itemType = itemTypeRepository.findOne(id);
         if (itemType != null)
