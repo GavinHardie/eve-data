@@ -3,6 +3,7 @@ package gavinh.eve;
 import gavinh.eve.utils.Runner;
 import gavinh.eve.data.Region;
 import gavinh.eve.data.RegionRepository;
+import gavinh.eve.manufacturing.ITEM_TYPE;
 import gavinh.eve.service.MarketOrderService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,8 +20,8 @@ public class ApiMarketOrders implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(ApiMarketOrders.class);
     private static final String[] orderTypes = new String[] { "buy", "sell" };
-    private static final Integer[] itemTypeIds = new Integer[] {34, 35, 36, 37, 38, 39, 40, 11483, 9842, 9840, 11399, 2361, 2349, 16680, 16681, 16670, 16671, 33359, 11541, 11693, 11370, 11578, 20414, 20419, 34205, 40519, 40520, 29668, 34133 };
-
+    
+    
     @Autowired
     private MarketOrderService marketOrderService;
 
@@ -36,7 +37,7 @@ public class ApiMarketOrders implements CommandLineRunner {
         Runner runner = new Runner(20);
         Iterable<Region> regions = regionRepository.findAll();
         
-        for(Integer itemTypeId : itemTypeIds) {
+        for(Integer itemTypeId : ITEM_TYPE.covopRelatedGoods) {
             for(Region region : regions) {
                 runner.run(new FetchOrders(fetched, itemTypeId, region));
             }
