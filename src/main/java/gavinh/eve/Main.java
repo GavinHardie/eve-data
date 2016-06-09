@@ -21,6 +21,7 @@ public class Main {
         message.append("-Dspring.profiles.active=run-shoppinglist-report\n");
         message.append("-Dspring.profiles.active=run-stockbreakdown-report\n");
         message.append("-Dspring.profiles.active=run-direct-sell-report\n");
+        message.append("-Dspring.profiles.active=hauling-opportunity\n");
         System.out.println(message.toString());
         
         SpringApplication application = new SpringApplication(Main.class);

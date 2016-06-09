@@ -46,6 +46,7 @@ public class ApiMarketOrders implements CommandLineRunner {
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.covopRelatedGoods));
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.advancedComponents));
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.tradeGoods));
+        itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.datacores));
         for(Integer itemTypeId : itemTypeIdToProcess) {
             for(Region region : regions) {
                 runner.run(new FetchOrders(fetched, itemTypeId, region));
