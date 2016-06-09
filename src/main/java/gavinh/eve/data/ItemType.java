@@ -62,5 +62,34 @@ public class ItemType implements Serializable {
     public void setMarketGroup(MarketGroup marketGroup) {
         this.marketGroup = marketGroup;
     }
-    
+
+    public String toString() {
+        return String.format("%d %s", id, name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ItemType other = (ItemType) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + this.id;
+        return hash;
+    }
 }
+

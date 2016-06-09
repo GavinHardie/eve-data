@@ -1,9 +1,11 @@
 package gavinh.eve;
 
+import gavinh.eve.data.ItemType;
 import gavinh.eve.utils.Runner;
 import gavinh.eve.data.Region;
 import gavinh.eve.data.RegionRepository;
 import gavinh.eve.manufacturing.ITEM_TYPE;
+import gavinh.eve.service.ItemTypeService;
 import gavinh.eve.service.MarketOrderService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ public class ApiMarketOrders implements CommandLineRunner {
     private MarketOrderService marketOrderService;
 
     @Autowired
+    private ItemTypeService itemTypeService;
+    
+    @Autowired
     private RegionRepository regionRepository;
     
     @Override
@@ -39,10 +44,18 @@ public class ApiMarketOrders implements CommandLineRunner {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fetched = sdf.format(new Date());
 
+        List<ItemType> itemTypes = itemTypeService.deepScanMarketGroup(9);
+        for(ItemType itemType : itemTypes) {
+            log.info(itemType.toString());
+        }
+        
         Runner runner = new Runner(20);
         Iterable<Region> regions = regionRepository.findAll();
         
         Set<Integer> itemTypeIdToProcess = new HashSet<>();
+        for(ItemType itemType : itemTypeService.deepScanMarketGroup(9)) {
+            itemTypeIdToProcess.add(itemType.getId());
+        }
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.covopRelatedGoods));
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.advancedComponents));
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.tradeGoods));
