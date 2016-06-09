@@ -164,11 +164,13 @@ public class HaulingOpportunity implements CommandLineRunner {
         
         @Override
         public String toString() {
-            return String.format("%,.2f can be made shipping %d %s from %s to %s volume is %,.0f limited by %s",
+            return String.format("%,.2f can be made shipping %d %s from %s/%s to %s/%s volume is %,.0f limited by %s",
                     profit, 
                     quantity, 
                     buy.getItemType().getName(), 
+                    sell.getStation().getName(), 
                     sell.getStation().getSolarSystem().getName(),
+                    buy.getStation().getName(), 
                     buy.getStation().getSolarSystem().getName(),
                     volume,
                     limitedBy.toString().toLowerCase());

@@ -17,6 +17,8 @@ public interface MarketOrderRepository extends CrudRepository<MarketOrder, Long>
     
     List<MarketOrder> findByFetchedAndBuysellAndItemType(String fetched, String buysell, ItemType itemType);
     
+    List<MarketOrder> findByFetchedAndBuysellAndStation(String fetched, String buysell, Station station);
+    
     void deleteByFetchedAndBuysellAndItemTypeAndRegion(String fetched, String buysell, ItemType itemType, Region region);
 
 }

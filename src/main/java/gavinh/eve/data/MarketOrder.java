@@ -99,4 +99,30 @@ public class MarketOrder implements Serializable {
     public String toString() {
         return String.format("Id:%d Fetched:%s OrderType:%s Name:%s Quantity:%d Price:%f", id, fetched, buysell, itemType.getName(), quantity, price);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MarketOrder other = (MarketOrder) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
