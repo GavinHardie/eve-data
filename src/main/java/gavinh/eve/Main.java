@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.CommandLinePropertySource;
+import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
@@ -27,6 +29,7 @@ public class Main {
         System.out.println(message.toString());
         
         SpringApplication application = new SpringApplication(Main.class);
+        application.setAddCommandLineProperties(true);
         
         /*
         load                        populate an empty DB

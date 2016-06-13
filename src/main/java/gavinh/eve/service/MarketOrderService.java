@@ -8,6 +8,7 @@ import gavinh.eve.data.MarketApiCall;
 import gavinh.eve.data.MarketApiCallKey;
 import gavinh.eve.data.MarketApiCallRepository;
 import gavinh.eve.data.MarketOrder;
+import gavinh.eve.data.MarketOrderKey;
 import gavinh.eve.data.MarketOrderRepository;
 import gavinh.eve.data.Region;
 import gavinh.eve.data.SolarSystem;
@@ -30,7 +31,7 @@ public class MarketOrderService {
 
     private static final Logger log = LoggerFactory.getLogger(MarketOrderService.class);
     
-    private static final int CACHE_HOURS = 2;
+    private static final int CACHE_HOURS = 0;
     
     @Autowired
     private ItemTypeRepository itemTypeRepository;
@@ -48,14 +49,10 @@ public class MarketOrderService {
     private MarketOrderRepository marketOrderRepository;
 
     @Transactional
-    public void fetchOrders(String fetched, Integer itemTypeId, String orderType, Region region) {
+    public void fetchOrders(String fetched, ItemType itemType, String orderType, Region region) {
 
         Date nowLessCache = new Date(System.currentTimeMillis() - (CACHE_HOURS * 60 * 60 * 1000));
         
-        ItemType itemType = itemTypeRepository.findOne(itemTypeId);
-
-        log.info(String.format("Fetching %s orders for %s in %s", orderType, itemType.getName(), region.getName()));
-
         MarketApiCallKey marketApiCallKey = new MarketApiCallKey();
         marketApiCallKey.setBuysell(orderType);
         marketApiCallKey.setItemType(itemType);
@@ -116,20 +113,16 @@ public class MarketOrderService {
 
                 MarketOrder marketOrder = new MarketOrder();
                 marketOrder.setId(Utils.mapPath(Long.class, marketorder_map, "id"));
+                marketOrder.setFetched(fetched);
                 marketOrder.setQuantity(Utils.mapPath(Integer.class, marketorder_map, "volume"));
                 marketOrder.setPrice(Utils.mapPath(Float.class, marketorder_map, "price"));
                 marketOrder.setBuysell(orderType);
-                marketOrder.setFetched(fetched);
                 marketOrder.setItemType(itemType);
                 marketOrder.setRegion(region);
                 marketOrder.setStation(station);
                 marketOrderRepository.save(marketOrder);
             }
 
-            int numMarketOrders = marketorder_maps.size();
-            if (numMarketOrders > 0) {
-                log.info(String.format("Added [%d] market orders", numMarketOrders));
-            }
             marketorders_context = Utils.decodeAndGet(marketorders_context.read("$.next.href", String.class));
         }
 
