@@ -53,11 +53,22 @@ public class ApiMarketOrders implements CommandLineRunner {
     public void run(String... strings) throws Exception {
         
         boolean fast = environment.getProperty("fast") != null;
+        if (fast)
+            log.info("Running with --fast set");
+        
+        int numThreads = 100;
+        String paramValue = environment.getProperty("threads", "100");
+        try {
+            numThreads = Integer.parseInt(paramValue);
+        } catch (NumberFormatException e) {
+            log.error(String.format("Invalid parameter --threads=n expected.  [%s] is not a valid number.  Defaulting to 100", paramValue));
+        }
+        log.info(String.format("Running with %d threads", numThreads));
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fetched = sdf.format(new Date());
 
-        Runner runner = new Runner(100);
+        Runner runner = new Runner(numThreads);
         Iterable<Region> regions = regionRepository.findAll();
         
         Set<Integer> itemTypeIdToProcess = new HashSet<>();

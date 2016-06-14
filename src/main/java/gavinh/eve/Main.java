@@ -19,7 +19,7 @@ public class Main {
         StringBuilder message = new StringBuilder();
         message.append("Command line options are:\n");
         message.append("-Dspring.profiles.active=load\n");
-        message.append("-Dspring.profiles.active=market-orders\n");
+        message.append("-Dspring.profiles.active=market-orders [--fast] [--threads=100]\n");
         message.append("-Dspring.profiles.active=run-shoppinglist-report\n");
         message.append("-Dspring.profiles.active=run-stockbreakdown-report\n");
         message.append("-Dspring.profiles.active=run-direct-sell-report\n");

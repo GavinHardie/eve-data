@@ -31,7 +31,7 @@ public class MarketOrderService {
 
     private static final Logger log = LoggerFactory.getLogger(MarketOrderService.class);
     
-    private static final int CACHE_HOURS = 0;
+    private static final int CACHE_HOURS = 2;
     
     @Autowired
     private ItemTypeRepository itemTypeRepository;
