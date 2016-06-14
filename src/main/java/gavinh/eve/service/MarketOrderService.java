@@ -65,7 +65,7 @@ public class MarketOrderService {
         // Delete any records in the DB from requests made earlier today
         marketOrderRepository.deleteByFetchedAndBuysellAndItemTypeAndRegion(fetched, orderType, itemType, region);
 
-        String marketorders_url = String.format("https://crest-tq.eveonline.com/market/%d/orders/%s/?type=http://crest-tq.eveonline.com/types/%d/", region.getId(), orderType, itemType.getId());
+        String marketorders_url = String.format("https://crest-tq.eveonline.com/market/%d/orders/%s/?type=http://crest-tq.eveonline.com/inventory/types/%d/", region.getId(), orderType, itemType.getId());
         DocumentContext marketorders_context = Utils.get(marketorders_url);
         while (marketorders_context != null) {
 

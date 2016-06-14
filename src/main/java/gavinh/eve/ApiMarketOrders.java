@@ -11,17 +11,13 @@ import gavinh.eve.service.MarketOrderService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Profile;
@@ -73,9 +69,9 @@ public class ApiMarketOrders implements CommandLineRunner {
         
         Set<Integer> itemTypeIdToProcess = new HashSet<>();
         
-//        for(ItemType itemType : itemTypeService.deepScanMarketGroup(9)) {
-//            itemTypeIdToProcess.add(itemType.getId());
-//        }
+        for(ItemType itemType : itemTypeService.deepScanMarketGroup(9)) {
+            itemTypeIdToProcess.add(itemType.getId());
+        }
 
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.covopRelatedGoods));
         itemTypeIdToProcess.addAll(Arrays.asList(ITEM_TYPE.advancedComponents));

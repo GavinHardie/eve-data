@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class Utils {
     
+    private static final int SEC_LIMIT_BEFORE_WARN = 30;
     private static Pattern ID_FROM_HREF = Pattern.compile(".*/(\\d+)/?");
     private static final Logger log = Logger.getLogger(Utils.class);
     
@@ -41,6 +42,7 @@ public class Utils {
             return null;
         int retry = 5;
         while(true) {
+            long start = System.currentTimeMillis();
             try {
                 String json = REST_TEMPLATE.getForObject(url, String.class);
                 DocumentContext context = JsonPath.using(CONF).parse(json);
@@ -52,7 +54,13 @@ public class Utils {
                 } else {
                     log.info(String.format("[%s] while getting [%s] Retrying... (%d tries remaining)", e.getMessage(), url, retry));
                 }
+            } finally {
+                long duration = System.currentTimeMillis() - start;
+                if (duration > SEC_LIMIT_BEFORE_WARN * 1000) {
+                    log.warn(String.format("[%d] sec to retrieve [%s]", duration / 1000, url));
+                }
             }
+            
             --retry;
             try {
                 Thread.sleep(15000);
